@@ -98,6 +98,45 @@
       margin-top: 4px;
     }
 
+    .vehicle-status {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 8px;
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      display: none;
+    }
+
+    .vehicle-status.active {
+      display: block;
+      border-color: rgba(74, 184, 255, 0.3);
+      background: rgba(74, 184, 255, 0.08);
+    }
+
+    .vehicle-info {
+      color: var(--text);
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .water-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .water-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4ab8ff, #2a8fff);
+      border-radius: 3px;
+      transition: width 0.1s;
+    }
+
     .hud-right {
       position: fixed;
       right: 10px;
@@ -296,13 +335,143 @@
       backdrop-filter: blur(6px);
       box-shadow: 0 8px 24px rgba(0,0,0,0.3);
       opacity: 0.9;
+      display: none;
+    }
+
+    .vehicle-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 320px;
+      background: var(--panel);
+      border: 2px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 16px;
+      z-index: 200;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+      display: none;
+    }
+
+    .vehicle-panel.active {
+      display: block;
+    }
+
+    .panel-header {
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--text);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .vehicle-list {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+    }
+
+    .vehicle-item {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      pointer-events: auto;
+    }
+
+    .vehicle-item:hover {
+      background: rgba(42, 130, 255, 0.15);
+      border-color: rgba(42, 130, 255, 0.3);
+    }
+
+    .vehicle-item-type {
+      font-weight: bold;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .vehicle-item-dist {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .vehicle-item-water {
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .vehicle-mini-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .vehicle-mini-fill {
+      height: 100%;
+      background: #4ab8ff;
+      border-radius: 2px;
+    }
+
+    .close-btn {
+      width: 100%;
+      padding: 8px;
+      background: rgba(255, 85, 85, 0.15);
+      border: 1px solid rgba(255, 85, 85, 0.3);
+      color: var(--danger);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      pointer-events: auto;
+      transition: 0.2s;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 85, 85, 0.25);
+      border-color: rgba(255, 85, 85, 0.5);
+    }
+
+    .boarding-prompt {
+      position: fixed;
+      bottom: 200px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--panel);
+      border: 2px solid rgba(102, 221, 136, 0.4);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--good);
+      z-index: 110;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      backdrop-filter: blur(6px);
+      display: none;
+    }
+
+    .boarding-prompt.active {
+      display: block;
+      animation: pulse-border 1s infinite;
+    }
+
+    @keyframes pulse-border {
+      0%, 100% { border-color: rgba(102, 221, 136, 0.4); }
+      50% { border-color: rgba(102, 221, 136, 0.8); }
     }
 
     @media (max-width: 768px) {
       .hud-left, .hud-right { width: 220px; }
       .map-widget { width: 160px; height: 110px; }
       .chat-bottom { width: calc(100vw - 20px); }
-      .help-overlay { max-width: 180px; font-size: 10px; }
+      .vehicle-panel { width: 280px; }
     }
 
     ::-webkit-scrollbar {
@@ -348,6 +517,14 @@
           <span class="stat-value" id="scoreCount">0</span>
         </div>
       </div>
+      <div class="vehicle-status" id="vehicleStatus">
+        <div class="vehicle-info" id="vehicleType"></div>
+        <div style="font-size: 10px; margin-bottom: 4px;">Water Tank</div>
+        <div class="water-bar">
+          <div class="water-fill" id="waterBar" style="width: 100%"></div>
+        </div>
+        <button class="close-btn" id="exitBtn" style="margin-top: 8px;">Exit Vehicle [X]</button>
+      </div>
     </div>
 
     <div class="hud-right">
@@ -366,7 +543,14 @@
       <canvas id="minimapCanvas"></canvas>
     </div>
 
-    <div class="help-overlay" id="helpText" style="display: none;"></div>
+    <div class="help-overlay" id="helpText"></div>
+
+    <div class="boarding-prompt" id="boardingPrompt"></div>
+  </div>
+
+  <div class="vehicle-panel" id="vehiclePanel">
+    <div class="panel-header">Select Vehicle</div>
+    <div id="vehicleList" class="vehicle-list"></div>
   </div>
 
   <div class="chat-bottom">
@@ -410,7 +594,9 @@
       firePumps: [],
       score: 0,
       lastDispatchTime: 0,
-      chatHistory: []
+      chatHistory: [],
+      playerInVehicle: null,
+      nearbyVehicles: []
     };
 
     const player = {
@@ -430,7 +616,14 @@
       chatMessages: document.getElementById("chatMessages"),
       chatInput: document.getElementById("chatInput"),
       dispatchLog: document.getElementById("dispatchLog"),
-      helpText: document.getElementById("helpText")
+      helpText: document.getElementById("helpText"),
+      vehiclePanel: document.getElementById("vehiclePanel"),
+      vehicleList: document.getElementById("vehicleList"),
+      boardingPrompt: document.getElementById("boardingPrompt"),
+      vehicleStatus: document.getElementById("vehicleStatus"),
+      vehicleType: document.getElementById("vehicleType"),
+      waterBar: document.getElementById("waterBar"),
+      exitBtn: document.getElementById("exitBtn")
     };
 
     function updateHud() {
@@ -438,6 +631,15 @@
       ui.civCount.textContent = gameState.civilians.length;
       ui.unitCount.textContent = gameState.vehicles.length;
       ui.scoreCount.textContent = gameState.score;
+
+      if (gameState.playerInVehicle) {
+        const v = gameState.playerInVehicle;
+        ui.vehicleStatus.classList.add("active");
+        ui.vehicleType.textContent = v.type.toUpperCase() + " OPERATIONAL";
+        ui.waterBar.style.width = Math.max(0, Math.min(100, (v.water / (v.type === "truck" ? 70 : 45)) * 100)) + "%";
+      } else {
+        ui.vehicleStatus.classList.remove("active");
+      }
     }
 
     function addDispatchMessage(text, severity = "info") {
@@ -462,7 +664,7 @@
     }
 
     function showHelp() {
-      ui.helpText.innerHTML = `<b>Controls:</b><br>WASD - move<br>Mouse - look<br>Shift - sprint<br>E - target nearest fire<br>Click UI buttons for commands`;
+      ui.helpText.innerHTML = `<b>Controls:</b><br>WASD - move<br>Mouse - look<br>Shift - sprint<br>E - call vehicles / board<br>X - exit vehicle<br>Click UI buttons for commands`;
       ui.helpText.style.display = "block";
       setTimeout(() => { ui.helpText.style.display = "none"; }, 4000);
     }
@@ -661,6 +863,7 @@
         x, z,
         mesh: group,
         water,
+        maxWater: (type === "truck" ? 70 : type === "plane" ? 50 : type === "helicopter" ? 45 : 40),
         speed,
         radius,
         target: { x: Math.random() * 140 - 70, z: Math.random() * 140 - 70 }
@@ -697,6 +900,11 @@
     }
 
     function updateVehicleAI(v, dt) {
+      // If player is in vehicle, don't do AI
+      if (gameState.playerInVehicle === v) {
+        return;
+      }
+
       const fire = findNearestFire(v.x, v.z);
 
       if (fire && v.water > 0) {
@@ -721,7 +929,7 @@
       } else if (v.water <= 0) {
         const st = findNearestStation(v.x, v.z);
         if (st && Math.hypot(v.x - st.x, v.z - st.z) < 5) {
-          v.water = (v.type === "truck" ? 70 : 45);
+          v.water = v.maxWater;
         } else if (st) {
           const d = Math.hypot(v.x - st.x, v.z - st.z);
           v.x += ((st.x - v.x) / d) * v.speed * dt * 0.6;
@@ -779,6 +987,129 @@
       if (Math.random() < 0.012) spawnRandomFire();
     }
 
+    // ========== VEHICLE CONTROL ==========
+    function findNearbyVehicles(x, z, maxDist = 20) {
+      return gameState.vehicles.filter(v => dist2D({ x, z }, v) < maxDist);
+    }
+
+    function showVehicleSelectPanel() {
+      const nearby = findNearbyVehicles(player.pos.x, player.pos.z, 25);
+      gameState.nearbyVehicles = nearby;
+
+      ui.vehicleList.innerHTML = "";
+
+      if (nearby.length === 0) {
+        ui.boardingPrompt.textContent = "No vehicles nearby. Press E to call.";
+        ui.boardingPrompt.classList.add("active");
+        setTimeout(() => ui.boardingPrompt.classList.remove("active"), 3000);
+        return;
+      }
+
+      nearby.forEach((v, idx) => {
+        const item = document.createElement("div");
+        item.className = "vehicle-item";
+        const dist = Math.hypot(player.pos.x - v.x, player.pos.z - v.z).toFixed(1);
+        const waterPct = Math.round((v.water / v.maxWater) * 100);
+        
+        item.innerHTML = `
+          <div class="vehicle-item-type">${idx + 1}. ${v.type.toUpperCase()}</div>
+          <div class="vehicle-item-dist">Distance: ${dist}m</div>
+          <div class="vehicle-item-water">Water: ${waterPct}%</div>
+          <div class="vehicle-mini-bar">
+            <div class="vehicle-mini-fill" style="width: ${waterPct}%"></div>
+          </div>
+        `;
+
+        item.addEventListener("click", () => {
+          boardVehicle(v);
+        });
+
+        ui.vehicleList.appendChild(item);
+      });
+
+      ui.vehiclePanel.classList.add("active");
+    }
+
+    function boardVehicle(vehicle) {
+      gameState.playerInVehicle = vehicle;
+      ui.vehiclePanel.classList.remove("active");
+      addChatMessage("You", `Boarded ${vehicle.type}. Engaging fire suppression systems.`);
+      addDispatchMessage(`Player aboard ${vehicle.type}`, "good");
+    }
+
+    function exitVehicle() {
+      if (!gameState.playerInVehicle) return;
+      
+      const v = gameState.playerInVehicle;
+      player.pos.x = v.x + 3;
+      player.pos.z = v.z + 3;
+      
+      addChatMessage("You", `Exiting ${v.type}.`);
+      addDispatchMessage("Player disembarked", "info");
+      gameState.playerInVehicle = null;
+    }
+
+    function operateVehicle(v, dt) {
+      // Player controls the vehicle
+      const fwd = new THREE.Vector3(Math.sin(player.yaw), 0, Math.cos(player.yaw));
+      const right = new THREE.Vector3(Math.cos(player.yaw), 0, -Math.sin(player.yaw));
+
+      let move = new THREE.Vector3();
+      if (player.keys["KeyW"]) move.addScaledVector(fwd, 1);
+      if (player.keys["KeyS"]) move.addScaledVector(fwd, -1);
+      if (player.keys["KeyA"]) move.addScaledVector(right, -1);
+      if (player.keys["KeyD"]) move.addScaledVector(right, 1);
+
+      if (move.lengthSq() > 0) {
+        move.normalize().multiplyScalar(v.speed * dt);
+        v.x += move.x;
+        v.z += move.z;
+      }
+
+      // Auto-extinguish nearby fires
+      const fire = findNearestFire(v.x, v.z);
+      if (fire && v.water > 0) {
+        const d = dist2D({ x: v.x, z: v.z }, fire);
+        if (d < v.radius + 8) {
+          fire.intensity -= 1.2 * dt;
+          v.water -= 3.5 * dt;
+          if (fire.intensity <= 0) {
+            fire.active = false;
+            scene.remove(fire.mesh);
+            gameState.fires = gameState.fires.filter(f => f !== fire);
+            gameState.score += 25;
+            addDispatchMessage("Fire suppressed by player vehicle", "good");
+          }
+        }
+      }
+
+      // Refuel at station
+      const st = findNearestStation(v.x, v.z);
+      if (st && v.water < v.maxWater && Math.hypot(v.x - st.x, v.z - st.z) < 5) {
+        v.water = v.maxWater;
+        addDispatchMessage("Vehicle refueled", "good");
+      }
+
+      // Clamp position
+      v.x = Math.max(-95, Math.min(95, v.x));
+      v.z = Math.max(-95, Math.min(95, v.z));
+
+      v.mesh.position.x = v.x;
+      v.mesh.position.z = v.z;
+      if (v.type === "plane" || v.type === "helicopter") {
+        v.mesh.position.y = 16 + Math.sin(performance.now() * 0.003 + v.x * 0.01) * 2.5;
+      }
+
+      // Update player position relative to vehicle
+      player.pos.x = v.x;
+      player.pos.z = v.z;
+      if (v.type === "plane" || v.type === "helicopter") {
+        player.pos.y = v.mesh.position.y + 1;
+      } else {
+        player.pos.y = 1.7;
+      }
+    }
+
     // ========== INPUT ==========
     let pointerLocked = false;
 
@@ -800,10 +1131,17 @@
     document.addEventListener("keydown", (e) => {
       player.keys[e.code] = true;
       if (e.code === "KeyE") {
-        const fire = findNearestFire(player.pos.x, player.pos.z);
-        if (fire) {
-          addChatMessage("You", `Fire spotted at ${Math.round(fire.x)}, ${Math.round(fire.z)}. Dispatching units.`);
-          addDispatchMessage("Player targeting fire", "warning");
+        if (gameState.playerInVehicle) {
+          // Player is in vehicle
+          return;
+        } else {
+          // Player is on ground, show nearby vehicles
+          showVehicleSelectPanel();
+        }
+      }
+      if (e.code === "KeyX") {
+        if (gameState.playerInVehicle) {
+          exitVehicle();
         }
       }
     });
@@ -812,7 +1150,16 @@
       player.keys[e.code] = false;
     });
 
+    ui.exitBtn.addEventListener("click", () => {
+      exitVehicle();
+    });
+
     function updatePlayer(dt) {
+      if (gameState.playerInVehicle) {
+        operateVehicle(gameState.playerInVehicle, dt);
+        return;
+      }
+
       const fwd = new THREE.Vector3(Math.sin(player.yaw), 0, Math.cos(player.yaw));
       const right = new THREE.Vector3(Math.cos(player.yaw), 0, -Math.sin(player.yaw));
 
@@ -930,7 +1277,7 @@
       // Player
       const px = ((player.pos.x + 100) / 200) * w;
       const py = ((player.pos.z + 100) / 200) * h;
-      minimapCtx.fillStyle = "#fff";
+      minimapCtx.fillStyle = gameState.playerInVehicle ? "#ffff00" : "#fff";
       minimapCtx.beginPath();
       minimapCtx.arc(px, py, 3, 0, Math.PI * 2);
       minimapCtx.fill();
@@ -1001,7 +1348,7 @@
       renderer.setSize(w, h);
     });
 
-    addChatMessage("Dispatch", "Firestorm Response online. Units standing by. Type 'help' for commands.");
+    addChatMessage("Dispatch", "Firestorm Response online. Press E to board a vehicle. Units standing by. Type 'help' for commands.");
     addDispatchMessage("System ready", "good");
     animate();
   </script>
